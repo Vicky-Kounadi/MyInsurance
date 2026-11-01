@@ -137,6 +137,7 @@ public class PolicyService {
     //GET POLICY BY NUMBER
     public PolicyResponse getPolicyByNumber(String policyNumber) {
         List<InsurancePolicy> ps = policyRepository.findByPolicyNumber(policyNumber);
+        //no policies
         if (ps.isEmpty()) {
             throw new IllegalArgumentException("Policy " +policyNumber+ " not found");//404
         }
@@ -147,6 +148,11 @@ public class PolicyService {
     //GET ALL POLICIES
     public List<PolicyResponse> getAllPolicies() {
         List<InsurancePolicy> policies = policyRepository.findAll();
+        //no policies
+        if (policies.isEmpty()) {
+            throw new IllegalArgumentException("No policies found");//404
+        }
+        
         List<PolicyResponse> allPolicies = new ArrayList<>();
 
         for (InsurancePolicy ps : policies) {
@@ -156,4 +162,25 @@ public class PolicyService {
         return allPolicies;
     }
 
+    //GET POLICIES BY CLIENT
+    public List<PolicyResponse> getPoliciesByClient(Long clientId) {
+        //check if client exists
+        if (!clientRepository.existsById(clientId)) {
+            throw new IllegalArgumentException("Client " +clientId +" not found");//404
+        }
+    
+        List<InsurancePolicy> policies = policyRepository.findByClient_clientId(clientId);
+        //no policies
+        if (policies.isEmpty()) {
+            throw new IllegalArgumentException("Client has no policies");//404
+        }
+        
+        List<PolicyResponse> allPolicies = new ArrayList<>();
+
+        for (InsurancePolicy ps : policies) {
+            PolicyResponse pResponse = makePolicyResponse(ps);
+            allPolicies.add(pResponse);
+        }
+        return allPolicies;
+    }
 }
