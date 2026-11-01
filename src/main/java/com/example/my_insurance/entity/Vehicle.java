@@ -1,6 +1,5 @@
-package main.java.com.example.my_insurance.entity;
+package com.example.my_insurance.entity;
 
-import main.java.com.example.my_insurance.entity.Client;
 import java.time.Year;
 import jakarta.persistence.*;
 

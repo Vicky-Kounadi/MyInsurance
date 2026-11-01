@@ -1,11 +1,7 @@
-package main.java.com.example.my_insurance.entity;
+package com.example.my_insurance.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import main.java.com.example.my_insurance.entity.Client;
-import main.java.com.example.my_insurance.entity.Product;
-import main.java.com.example.my_insurance.entity.Vehicle;
 
 import jakarta.persistence.*;
 

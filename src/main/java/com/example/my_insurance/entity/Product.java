@@ -1,4 +1,4 @@
-package main.java.com.example.my_insurance.entity;
+package com.example.my_insurance.entity;
 
 import java.math.BigDecimal;
 import jakarta.persistence.*;
