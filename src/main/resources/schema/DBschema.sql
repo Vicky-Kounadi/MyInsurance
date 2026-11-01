@@ -12,6 +12,7 @@ CREATE TABLE vehicle(
     vin VARCHAR(17) UNIQUE NOT NULL, /*tops out at 17*/
     manufacturer VARCHAR(50)  NOT NULL,
     model VARCHAR(50) NOT NULL,
+    /*first  car invented in 1885*/
     manufacturing_year INT CHECK(manufacturing_year>=1885),
     client_id BIGINT NOT NULL,
 
