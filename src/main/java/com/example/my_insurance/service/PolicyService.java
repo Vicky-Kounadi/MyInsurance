@@ -183,4 +183,15 @@ public class PolicyService {
         }
         return allPolicies;
     }
+    
+    // GET POLICY STATUS
+    public PolicyStatus getPolicyStatus(String policyNumber){
+        List<InsurancePolicy> policies = policyRepository.findByPolicyNumber(policyNumber);
+        //no policies
+        if (policies.isEmpty()) {
+            throw new IllegalArgumentException("Policy " +policyNumber+ " not found");
+        }
+
+        return policies.get(0).getStatus();
+    }
 }
