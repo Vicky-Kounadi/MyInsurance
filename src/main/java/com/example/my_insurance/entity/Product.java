@@ -1,23 +1,44 @@
 package main.java.com.example.my_insurance.entity;
 
 import java.math.BigDecimal;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name="product")
 public class Product {
-    private final long productId;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="product_id")
+    private Long productId;
+    
+    @Column(name="product_code", nullable=false, unique=true, length = 10)
     private String productCode;
+    
+    @Column(name="product_name", nullable=false, length = 50)
     private String productName;
+    
+    @Column(name="description", length = 100)
     private String description;
+    
+    @Column(name="base_premium", nullable=false, precision = 10, scale = 2)
     private BigDecimal basePremium;
+    
+    @Column(name="active", nullable=false)
     private boolean active;
 
     //constructor
-    public Product(long productId, String productCode, String productName, String description, BigDecimal basePremium){
-        this.productId = productId;
+    public Product(String productCode, String productName, String description, BigDecimal basePremium){
         this.productCode = productCode;
         this.productName = productName;
         this.description = description;
         this.basePremium = basePremium;
+        //default value is true
         this.active = true;
+    }
+    
+    //JPA constructor
+    protected Product(){
     }
 
     //setters
@@ -45,7 +66,7 @@ public class Product {
     }
     
     //getters
-    public long getProductId(){
+    public Long getProductId(){
         return productId; 
     }
     

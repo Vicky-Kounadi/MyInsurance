@@ -1,19 +1,38 @@
 package main.java.com.example.my_insurance.entity;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name="client")
 public class Client {
-    private final long clientId;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="client_id")
+    private Long clientId;
+    
+    @Column(name="last_name", nullable=false, length = 50)
     private String lastName;
+    
+    @Column(name="first_name", nullable=false, length = 50)
     private String firstName;
+    
+    @Column(name="email", nullable=false, unique=true, length = 100)
     private String email;
+    
+    @Column(name="phone", nullable=false, length = 20)
     private String phone;
 
     //constructor
-    public Client(long clientId, String lastName, String firstName, String email, String phone){
-        this.clientId = clientId;
+    public Client(String lastName, String firstName, String email, String phone){
         this.lastName = lastName;
         this.firstName = firstName;
         this.email = email;
         this.phone = phone;
+    }
+    
+    //JPA constructor
+    protected Client() {
     }
 
     //setters
@@ -34,7 +53,7 @@ public class Client {
     }
         
     //getters
-    public long getClientId(){
+    public Long getClientId(){
         return clientId; 
     }
     

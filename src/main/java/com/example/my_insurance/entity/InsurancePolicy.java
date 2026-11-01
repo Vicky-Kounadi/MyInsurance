@@ -7,6 +7,10 @@ import main.java.com.example.my_insurance.entity.Client;
 import main.java.com.example.my_insurance.entity.Product;
 import main.java.com.example.my_insurance.entity.Vehicle;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name="insurance_policy")
 public class InsurancePolicy {
     
     public enum PolicyStatus{
@@ -15,23 +19,46 @@ public class InsurancePolicy {
     CANCELLED
     }
 
-    private final long policyId;
-    private final String policyNumber;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="policy_id")
+    private Long policyId;
+    
+    @Column(name="policy_number", nullable=false, unique=true, length = 20)
+    private String policyNumber;
+    
+    @Column(name="description", length = 100)
     private String description;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name="status", nullable=false, length = 10)
     private PolicyStatus status;
+    
+    @Column(name="monthly_premium", nullable=false, precision = 10, scale = 2)
     private BigDecimal monthlyPremium;
+    
+    @Column(name="start_date", nullable=false)
     private LocalDate startDate;
+    
+    @Column(name="end_date", nullable=false)
     private LocalDate endDate;
     
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name="client_id", nullable=false)
     private Client client;
+    
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name="product_id", nullable=false)
     private Product product;
+    
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name="vehicle_id", nullable=false)
     private Vehicle vehicle;
 
     //constructor
-    public InsurancePolicy(long policyId, String policyNumber, String description, PolicyStatus status, 
+    public InsurancePolicy(String policyNumber, String description, PolicyStatus status, 
                            BigDecimal monthlyPremium, LocalDate startDate, LocalDate endDate, 
                            Client client, Product product, Vehicle vehicle){
-        this.policyId = policyId;
         this.policyNumber = policyNumber;
         this.description = description;
         this.status = status;
@@ -43,6 +70,10 @@ public class InsurancePolicy {
         this.vehicle = vehicle;
     }
 
+    //JPA constructor
+    protected InsurancePolicy(){
+    }
+    
     //setters
   
     //PolicyNumber is final, immutable, cannot be changed/set in the future
@@ -89,7 +120,7 @@ public class InsurancePolicy {
     }
         
     //getters
-    public long getPolicyId(){
+    public Long getPolicyId(){
         return policyId; 
     }
     
@@ -151,6 +182,6 @@ public class InsurancePolicy {
     
     //methods
     //method to calcuale yearly monthlyPremium
-    //calculate for how long the cvehicle is insured
+    //calculate for how Long the cvehicle is insured
 }
 

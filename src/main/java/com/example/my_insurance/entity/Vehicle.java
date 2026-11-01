@@ -2,27 +2,49 @@ package main.java.com.example.my_insurance.entity;
 
 import main.java.com.example.my_insurance.entity.Client;
 import java.time.Year;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name="vehicle")
 public class Vehicle {
-    private final long vehicleId;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="vehicle_id")
+    private Long vehicleId;
+    
+    @Column(name="registration_number", nullable=false, unique=true, length = 20)
     private String registrationNumber;
+    
+    @Column(name="vin", nullable=false, unique=true, length = 17)
     private String vin;
+    
+    @Column(name="manufacturer", nullable=false, length = 50)
     private String manufacturer;
+    
+    @Column(name="model", nullable=false, length = 50)
     private String model;
+    
+    @Column(name="manufacturing_year")
     private int manufacturingYear;
     
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name="client_id", nullable=false)
     private Client client;
 
     //constructor
-    public Vehicle(long vehicleId, String registrationNumber, String vin, String manufacturer, 
+    public Vehicle(String registrationNumber, String vin, String manufacturer, 
                    String model, int manufacturingYear, Client client){
-        this.vehicleId = vehicleId;
         this.registrationNumber = registrationNumber;
         this.vin = vin;
         this.manufacturer = manufacturer;
         this.model = model;
         this.manufacturingYear = manufacturingYear;
         this.client = client;
+    }
+    
+    //JPA constructor
+    protected Vehicle(){   
     }
 
     //setters
@@ -57,7 +79,7 @@ public class Vehicle {
     }
         
     //getters
-    public long getVehicleId(){
+    public Long getVehicleId(){
         return vehicleId; 
     }
     
