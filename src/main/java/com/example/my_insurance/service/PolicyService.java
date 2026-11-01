@@ -1,6 +1,8 @@
 package com.example.my_insurance.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.example.my_insurance.dto.response.ClientResponse;
 import org.springframework.stereotype.Service;
@@ -40,21 +42,21 @@ public class PolicyService {
     
     public PolicyResponse makePolicyResponse(InsurancePolicy policy){
         //make the response
-        ClientResponse c_response= new ClientResponse(
+        ClientResponse cResponse= new ClientResponse(
             policy.getClient().getClientId(),
             policy.getClient().getFirstName(),
             policy.getClient().getLastName(),
             policy.getClient().getEmail()
         );
         
-        VehicleResponse v_response= new VehicleResponse(
+        VehicleResponse vResponse= new VehicleResponse(
             policy.getVehicle().getVehicleId(),
             policy.getVehicle().getRegistrationNumber(),
             policy.getVehicle().getManufacturer(),
             policy.getVehicle().getModel()
         );
         
-        ProductResponse p_response= new ProductResponse(
+        ProductResponse pResponse= new ProductResponse(
             policy.getProduct().getProductId(),
             policy.getProduct().getProductCode(),
             policy.getProduct().getProductName()
@@ -68,9 +70,9 @@ public class PolicyService {
             policy.getMonthlyPremium(),
             policy.getStartDate(),
             policy.getEndDate(),
-            c_response,
-            v_response,
-            p_response
+            cResponse,
+            vResponse,
+            pResponse
         );
     }
     
@@ -134,12 +136,24 @@ public class PolicyService {
     
     //GET POLICY BY NUMBER
     public PolicyResponse getPolicyByNumber(String policyNumber) {
-        InsurancePolicy p = policyRepository.findByPolicyNumber(policyNumber).orElse(null);
-        if (p == null) {
+        List<InsurancePolicy> ps = policyRepository.findByPolicyNumber(policyNumber);
+        if (ps.isEmpty()) {
             throw new IllegalArgumentException("Policy " +policyNumber+ " not found");//404
         }
         
-        return makePolicyResponse(p);
+        return makePolicyResponse(ps.get(0));
+    }
+    
+    //GET ALL POLICIES
+    public List<PolicyResponse> getAllPolicies() {
+        List<InsurancePolicy> policies = policyRepository.findAll();
+        List<PolicyResponse> allPolicies = new ArrayList<>();
+
+        for (InsurancePolicy ps : policies) {
+            PolicyResponse pResponse = makePolicyResponse(ps);
+            allPolicies.add(pResponse);
+        }
+        return allPolicies;
     }
 
 }
