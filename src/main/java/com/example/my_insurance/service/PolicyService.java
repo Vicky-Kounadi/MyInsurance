@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.my_insurance.dto.response.ClientResponse;
+import com.example.my_insurance.exception.BusinessRuleException;
+import com.example.my_insurance.exception.SearchNotFoundException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +24,6 @@ import com.example.my_insurance.repository.ClientRepository;
 import com.example.my_insurance.repository.InsurancePolicyRepository;
 import com.example.my_insurance.repository.ProductRepository;
 import com.example.my_insurance.repository.VehicleRepository;
-
-import jakarta.validation.Valid;
 
 @Service
 public class PolicyService {
@@ -81,14 +82,14 @@ public class PolicyService {
     public PolicyResponse createPolicy(CreatePolicyRequest request){
         //validate request correctness first and then check the DB
         if (request == null) {
-            throw new IllegalArgumentException("Request cannot be null");
+            throw new BusinessRuleException("Request cannot contain null");
         }
         if (request.getMonthlyPremium() == null || request.getMonthlyPremium().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Premium must be greater than 0");
+            throw new BusinessRuleException("Premium must be greater than 0");
         }
         if (request.getStartDate() == null || request.getEndDate() == null ||
             request.getEndDate().compareTo(request.getStartDate()) <= 0) {
-            throw new IllegalArgumentException("Invalid dates");
+            throw new BusinessRuleException("Invalid dates");
         }
 
         //find client, vehicle, product in theor reps
@@ -98,21 +99,21 @@ public class PolicyService {
     
         //if client n product requested DONT exist in the DB throw exception
         if(c == null){
-            throw new IllegalArgumentException("Client "+ request.getClientId() + " does not exist"); //404
+            throw new SearchNotFoundException("Client "+ request.getClientId() + " does not exist"); //404
         }
         if(p == null){
-            throw new IllegalArgumentException("Product "+ request.getProductId() + " does not exist"); //404
+            throw new SearchNotFoundException("Product "+ request.getProductId() + " does not exist"); //404
         }
         if(v == null){
-            throw new IllegalArgumentException("Vehicle "+ request.getVehicleId() + " does not exist"); //404
+            throw new SearchNotFoundException("Vehicle "+ request.getVehicleId() + " does not exist"); //404
         }
         
         //if product requested IS NOT active throw exception
         if(!p.isActive()){
-            throw new IllegalArgumentException("Product "+ request.getProductId() + " is not active"); //400
+            throw new BusinessRuleException("Product "+ request.getProductId() + " is not active"); //400
         }
         if(v.getClient().getClientId() != c.getClientId()){
-            throw new IllegalArgumentException("Client "+ request.getClientId() + " does not own Vehicle "+ request.getVehicleId()); //400
+            throw new BusinessRuleException("Client "+ request.getClientId() + " does not own Vehicle "+ request.getVehicleId()); //400
         }
         
         //make the new policy with the request fields
@@ -141,7 +142,7 @@ public class PolicyService {
         List<InsurancePolicy> ps = policyRepository.findByPolicyNumber(policyNumber);
         //no policies
         if (ps.isEmpty()) {
-            throw new IllegalArgumentException("Policy " +policyNumber+ " not found");//404
+            throw new SearchNotFoundException("Policy " +policyNumber+ " not found");//404
         }
         
         return makePolicyResponse(ps.get(0));
@@ -152,7 +153,7 @@ public class PolicyService {
         List<InsurancePolicy> policies = policyRepository.findAll();
         //no policies
         if (policies.isEmpty()) {
-            throw new IllegalArgumentException("No policies found");//404
+            throw new SearchNotFoundException("No policies found");//404
         }
         
         List<PolicyResponse> allPolicies = new ArrayList<>();
@@ -168,13 +169,13 @@ public class PolicyService {
     public List<PolicyResponse> getPoliciesByClient(Long clientId) {
         //check if client exists
         if (!clientRepository.existsById(clientId)) {
-            throw new IllegalArgumentException("Client " +clientId +" not found");//404
+            throw new SearchNotFoundException("Client " +clientId +" not found");//404
         }
     
         List<InsurancePolicy> policies = policyRepository.findByClient_clientId(clientId);
         //no policies
         if (policies.isEmpty()) {
-            throw new IllegalArgumentException("Client has no policies");//404
+            throw new SearchNotFoundException("Client has no policies");//404
         }
         
         List<PolicyResponse> allPolicies = new ArrayList<>();
@@ -191,7 +192,7 @@ public class PolicyService {
         List<InsurancePolicy> policies = policyRepository.findByPolicyNumber(policyNumber);
         //no policies
         if (policies.isEmpty()) {
-            throw new IllegalArgumentException("Policy " +policyNumber+ " not found");//404
+            throw new SearchNotFoundException("Policy " +policyNumber+ " not found");//404
         }
 
         return policies.get(0).getStatus();
@@ -203,7 +204,7 @@ public class PolicyService {
         List<InsurancePolicy> policies = policyRepository.findByPolicyNumber(policyNumber);
         //no policies
         if (policies.isEmpty()) {
-            throw new IllegalArgumentException("Policy " +policyNumber+ " not found");//404
+            throw new SearchNotFoundException("Policy " +policyNumber+ " not found");//404
         }
 
         policyRepository.delete(policies.get(0));

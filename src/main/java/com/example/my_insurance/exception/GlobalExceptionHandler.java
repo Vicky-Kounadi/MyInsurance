@@ -10,8 +10,8 @@ import com.example.my_insurance.dto.response.ApiErrorResponse;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     //NotFoundException
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiErrorResponse> handleClientNotFound(NotFoundException ex) {
+    @ExceptionHandler(SearchNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleClientNotFound(SearchNotFoundException ex) {
         //the http result type
 
         ApiErrorResponse error = new ApiErrorResponse(
