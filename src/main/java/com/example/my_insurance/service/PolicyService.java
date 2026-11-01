@@ -20,6 +20,8 @@ import com.example.my_insurance.repository.InsurancePolicyRepository;
 import com.example.my_insurance.repository.ProductRepository;
 import com.example.my_insurance.repository.VehicleRepository;
 
+import jakarta.validation.Valid;
+
 @Service
 public class PolicyService {
     private final ClientRepository clientRepository;
@@ -34,6 +36,42 @@ public class PolicyService {
         this.productRepository = productRepository;
         this.vehicleRepository = vehicleRepository;
         this.policyRepository = policyRepository;
+    }
+    
+    public PolicyResponse makePolicyResponse(InsurancePolicy policy){
+        //make the response
+        ClientResponse c_response= new ClientResponse(
+            policy.getClient().getClientId(),
+            policy.getClient().getFirstName(),
+            policy.getClient().getLastName(),
+            policy.getClient().getEmail()
+        );
+        
+        VehicleResponse v_response= new VehicleResponse(
+            policy.getVehicle().getVehicleId(),
+            policy.getVehicle().getRegistrationNumber(),
+            policy.getVehicle().getManufacturer(),
+            policy.getVehicle().getModel()
+        );
+        
+        ProductResponse p_response= new ProductResponse(
+            policy.getProduct().getProductId(),
+            policy.getProduct().getProductCode(),
+            policy.getProduct().getProductName()
+        );
+        
+        return new PolicyResponse(
+            policy.getPolicyId(),
+            policy.getPolicyNumber(),
+            policy.getDescription(),
+            policy.getStatus(),
+            policy.getMonthlyPremium(),
+            policy.getStartDate(),
+            policy.getEndDate(),
+            c_response,
+            v_response,
+            p_response
+        );
     }
     
     //CREATE A NEW POLICY
@@ -84,43 +122,24 @@ public class PolicyService {
         //save the new policy in the DB and store it
         InsurancePolicy saved = policyRepository.save(policy);
 
-        //make the response
-        ClientResponse c_response= new ClientResponse(
-            saved.getClient().getClientId(),
-            saved.getClient().getFirstName(),
-            saved.getClient().getLastName(),
-            saved.getClient().getEmail()
-        );
-        
-        VehicleResponse v_response= new VehicleResponse(
-            saved.getVehicle().getVehicleId(),
-            saved.getVehicle().getRegistrationNumber(),
-            saved.getVehicle().getManufacturer(),
-            saved.getVehicle().getModel()
-        );
-        
-        ProductResponse p_response= new ProductResponse(
-            saved.getProduct().getProductId(),
-            saved.getProduct().getProductCode(),
-            saved.getProduct().getProductName()
-        );
-        
-        return new PolicyResponse(
-            saved.getPolicyId(),
-            saved.getPolicyNumber(),
-            saved.getDescription(),
-            saved.getStatus(),
-            saved.getMonthlyPremium(),
-            saved.getStartDate(),
-            saved.getEndDate(),
-            c_response,
-            v_response,
-            p_response
-        );
-        
+        return makePolicyResponse(saved);
+           
     }
     
+    //NOTE-TO-SELF: I changed lenght from 20 to 40, cause uuid produces longer than expected
+    //https://www.w3schools.com/tools/tool_uuid.php
     private String generatePolicyNumber(){
         return "IP-"+ java.util.UUID.randomUUID();
     }
+    
+    //GET POLICY BY NUMBER
+    public PolicyResponse getPolicyByNumber(String policyNumber) {
+        InsurancePolicy p = policyRepository.findByPolicyNumber(policyNumber).orElse(null);
+        if (p == null) {
+            throw new IllegalArgumentException("Policy " +policyNumber+ " not found");//404
+        }
+        
+        return makePolicyResponse(p);
+    }
+
 }

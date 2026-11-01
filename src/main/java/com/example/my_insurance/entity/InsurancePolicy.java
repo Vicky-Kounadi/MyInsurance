@@ -20,7 +20,7 @@ public class InsurancePolicy {
     @Column(name="policy_id")
     private Long policyId;
     
-    @Column(name="policy_number", nullable=false, unique=true, length = 20)
+    @Column(name="policy_number", nullable=false, unique=true, length = 40)
     private String policyNumber;
     
     @Column(name="description", length = 100)
