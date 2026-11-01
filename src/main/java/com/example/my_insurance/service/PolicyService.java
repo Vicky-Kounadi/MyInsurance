@@ -116,8 +116,10 @@ public class PolicyService {
         }
         
         //make the new policy with the request fields
+        //NOTE-TO-SELF: not trust the user input for policy price, we use the base premium 
+        //Later I can add factors in order to make a more sophisticated calculations
         InsurancePolicy policy= new InsurancePolicy(generatePolicyNumber(), 
-            request.getDescription(), PolicyStatus.PENDING, request.getMonthlyPremium(),
+            request.getDescription(), PolicyStatus.PENDING, p.getBasePremium(),
                 request.getStartDate(),request.getEndDate(),
                     c,p,v);
  
