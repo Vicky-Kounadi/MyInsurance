@@ -189,9 +189,21 @@ public class PolicyService {
         List<InsurancePolicy> policies = policyRepository.findByPolicyNumber(policyNumber);
         //no policies
         if (policies.isEmpty()) {
-            throw new IllegalArgumentException("Policy " +policyNumber+ " not found");
+            throw new IllegalArgumentException("Policy " +policyNumber+ " not found");//404
         }
 
         return policies.get(0).getStatus();
+    }
+    
+    // DELETE POLICY BY NUMBER
+    @Transactional 
+    public void deletePolicy(String policyNumber){
+        List<InsurancePolicy> policies = policyRepository.findByPolicyNumber(policyNumber);
+        //no policies
+        if (policies.isEmpty()) {
+            throw new IllegalArgumentException("Policy " +policyNumber+ " not found");//404
+        }
+
+        policyRepository.delete(policies.get(0));
     }
 }
