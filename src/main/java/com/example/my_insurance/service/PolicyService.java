@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.my_insurance.dto.request.UpdatePolicyStatusRequest;
 import com.example.my_insurance.dto.response.ClientResponse;
 import com.example.my_insurance.exception.BusinessRuleException;
 import com.example.my_insurance.exception.SearchNotFoundException;
@@ -187,7 +188,7 @@ public class PolicyService {
         return allPolicies;
     }
     
-    // GET POLICY STATUS
+    //GET POLICY STATUS
     public PolicyStatus getPolicyStatus(String policyNumber){
         List<InsurancePolicy> policies = policyRepository.findByPolicyNumber(policyNumber);
         //no policies
@@ -198,7 +199,28 @@ public class PolicyService {
         return policies.get(0).getStatus();
     }
     
-    // DELETE POLICY BY NUMBER
+    //UPDATE POLICY STATUS
+    @Transactional 
+    public PolicyResponse updatePolicyStatus(String policyNumber, UpdatePolicyStatusRequest request){
+        //validate request correctness first and then check the DB
+        if (request == null || request.getStatus() == null) {
+            throw new BusinessRuleException("Request cannot contain null");
+        }
+        
+        List<InsurancePolicy> ps = policyRepository.findByPolicyNumber(policyNumber);
+        //no policies
+        if (ps.isEmpty()) {
+            throw new SearchNotFoundException("Policy " +policyNumber+ " not found");//404
+        }
+        
+        InsurancePolicy myPolicy = ps.get(0);
+        myPolicy.setStatus(request.getStatus());
+        policyRepository.save(myPolicy);
+        
+        return makePolicyResponse(myPolicy);
+    }
+    
+    //DELETE POLICY BY NUMBER
     @Transactional 
     public void deletePolicy(String policyNumber){
         List<InsurancePolicy> policies = policyRepository.findByPolicyNumber(policyNumber);
@@ -209,4 +231,5 @@ public class PolicyService {
 
         policyRepository.delete(policies.get(0));
     }
+    
 }
