@@ -204,7 +204,7 @@ public class PolicyService {
     public PolicyResponse updatePolicyStatus(String policyNumber, UpdatePolicyStatusRequest request){
         //validate request correctness first and then check the DB
         if (request == null || request.getStatus() == null) {
-            throw new BusinessRuleException("Request cannot contain null");
+            throw new BusinessRuleException("Request cannot contain null");//400
         }
         
         List<InsurancePolicy> ps = policyRepository.findByPolicyNumber(policyNumber);
