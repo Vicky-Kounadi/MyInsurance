@@ -43,6 +43,7 @@ Backend development exercise using Java 21, Spring Boot and Hibernate.
 
 ### Future improvements
 - Create / Retrieve / Update / Delete clients, vehicles and products.
+- Make sub-classes eg. Car, Motorbike etc.
 - More sophisticated premium calculation.
 - JMS messaging.
 - SOAP integration.

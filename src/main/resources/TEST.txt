@@ -1,0 +1,109 @@
+VEHICLE INSURANCE API - TESTING
+----------------------------------
+
+1. DATABASE SETUP
+
+Start the Spring Boot application:
+
+mvn spring-boot:run
+
+Open:
+
+http://localhost:8080/h2-console
+
+Connection details:
+JDBC URL: jdbc:h2:mem:insurance_db
+Username: sa
+Password: (empty)
+
+Insert sample clients (since the implementation for this is not ready yet):
+
+INSERT INTO client (first_name, last_name, email, phone)
+VALUES
+('Vicky', 'Kounadi', 'vk@gmail.com', '6911111111'),
+('Giannis', 'Stagakis', 'gs@hotmail.com', '6922222222');
+
+Insert sample products:
+
+INSERT INTO product
+(product_code, product_name, description, base_premium, active)
+VALUES
+('COMP', 'Comprehensive Cover', 'Full vehicle coverage', 85.00, TRUE),
+('THIRD', 'Third Party Cover', 'Basic third party coverage', 40.00, TRUE);
+
+Insert sample vehicles:
+
+INSERT INTO vehicle
+(registration_number, vin, manufacturer, model, manufacturing_year, client_id)
+VALUES
+('ABC-1234', 'VIN00000000000001', 'SYM', 'Symphony', 2015, 1),
+('DEF-5678', 'VIN00000000000002', 'Opel', 'Agila', 2004, 2);
+
+Check inserted records:
+
+SELECT * FROM client;
+SELECT * FROM product;
+SELECT * FROM vehicle;
+SELECT * FROM insurance_policy;
+
+
+2. API TESTING
+
+Base URL:
+
+http://localhost:8080/api
+
+Tested with Thunder Client.
+
+### CREATE POLICY
+
+POST /policies
+
+Body (JSON):
+
+{
+  "description": "Comprehensive motorbike insurance",
+  "monthlyPremium": 100.00,
+  "startDate": "2026-11-05",
+  "endDate": "2027-11-04",
+  "clientId": 1,
+  "vehicleId": 1,
+  "productId": 1
+}
+
+Note: Monthly premium is assigned by the backend as the product's base premium so 100 will not be passed.
+
+### GET ALL POLICIES
+
+GET /policies
+
+Expected response: 200 OK
+
+### GET POLICY BY NUMBER
+--------------------
+
+GET /policies/{policyNumber}
+
+Replace {policyNumber} with the policy number returned when creating a policy.
+
+### GET POLICIES BY CLIENT
+
+GET /clients/1/policies
+
+### GET POLICY STATUS
+
+GET /policies/{policyNumber}/status
+
+### UPDATE POLICY STATUS
+
+PATCH /policies/{policyNumber}/status
+
+Body (JSON):
+
+{
+  "status": "ACTIVE"
+}
+
+### DELETE POLICY
+
+DELETE /policies/{policyNumber}
