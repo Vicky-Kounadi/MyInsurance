@@ -88,7 +88,8 @@ public class PolicyService {
         if (request.getMonthlyPremium() == null || request.getMonthlyPremium().compareTo(BigDecimal.ZERO) <= 0) {
             throw new BusinessRuleException("Premium must be greater than 0");
         }
-        if (request.getStartDate() == null || request.getEndDate() == null ||
+        //year validity was never checked, cause i dont use setters
+        if (request.getStartDate().getYear() <= 1885 || request.getStartDate() == null || request.getEndDate() == null ||
             request.getEndDate().compareTo(request.getStartDate()) <= 0) {
             throw new BusinessRuleException("Invalid dates");
         }
@@ -113,7 +114,7 @@ public class PolicyService {
         if(!p.isActive()){
             throw new BusinessRuleException("Product "+ request.getProductId() + " is not active"); //400
         }
-        if(v.getClient().getClientId() != c.getClientId()){
+        if( !v.getClient().getClientId().equals(c.getClientId()) ) {
             throw new BusinessRuleException("Client "+ request.getClientId() + " does not own Vehicle "+ request.getVehicleId()); //400
         }
         
@@ -139,6 +140,7 @@ public class PolicyService {
     }
     
     //GET POLICY BY NUMBER
+    @Transactional(readOnly = true)
     public PolicyResponse getPolicyByNumber(String policyNumber) {
         List<InsurancePolicy> ps = policyRepository.findByPolicyNumber(policyNumber);
         //no policies
@@ -150,6 +152,7 @@ public class PolicyService {
     }
     
     //GET ALL POLICIES
+    @Transactional(readOnly = true)
     public List<PolicyResponse> getAllPolicies() {
         List<InsurancePolicy> policies = policyRepository.findAll();
         //no policies
@@ -167,6 +170,10 @@ public class PolicyService {
     }
 
     //GET POLICIES BY CLIENT
+    //LazyInitalizatioException: make response tries to access clients and vehicle and i have lazy fetching
+    //could cause n+1 problem if eg multiple vehicles
+    //better update to JOIN FETCH in JSQL
+    @Transactional(readOnly = true)
     public List<PolicyResponse> getPoliciesByClient(Long clientId) {
         //check if client exists
         if (!clientRepository.existsById(clientId)) {

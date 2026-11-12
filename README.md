@@ -1,5 +1,5 @@
 # Vehicle Insurance Management API
-Backend development exercise using Java 21, Spring Boot and Hibernate.
+Backend development exercise using Java 17, Spring Boot and Hibernate.
 
 ### Technologies
 - Java

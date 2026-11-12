@@ -59,7 +59,7 @@ public class CreatePolicyRequest {
     }
 
     public void setStartDate(LocalDate startDate){
-        if(startDate==null || startDate.getYear() <1885){
+        if(startDate==null || startDate.getYear() <=1885){
             throw new IllegalArgumentException("Start date cannot be older than year 1885");
         }
         this.startDate = startDate;
